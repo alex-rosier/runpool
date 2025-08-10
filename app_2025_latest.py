@@ -109,7 +109,16 @@ def not_found_error(error):
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+    from datetime import datetime
+    now = datetime.now()
+    
+    # Get user's active games safely
+    try:
+        active_games = current_user.players if hasattr(current_user, 'players') else []
+    except:
+        active_games = []
+    
+    return render_template('dashboard.html', now=now, active_games=active_games)
 
 
 class User(db.Model, UserMixin):
@@ -457,10 +466,23 @@ def home():
 @login_required
 def user_profile():
     if request.method == 'POST':
+        # Update basic profile information
         current_user.name = request.form['name']
         current_user.email = request.form['email']
+        
+        # Handle team selection
+        team_id = request.form.get('team_id')
+        if team_id and team_id != '0':
+            team = Team.query.get(team_id)
+            if team:
+                current_user.team = team
+            else:
+                flash('Invalid team selected', 'error')
+                return redirect(url_for('user_profile'))
+        elif team_id == '0':
+            current_user.team = None
 
-# Check if current password and new password are provided
+        # Check if current password and new password are provided
         current_password = request.form.get('current_password')
         new_password = request.form.get('new_password')
         if current_password and new_password:
@@ -468,13 +490,27 @@ def user_profile():
             if bcrypt.check_password_hash(current_user.password, current_password):
                 # Update password
                 current_user.password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+                flash('Password updated successfully!', 'success')
             else:
-                return "Incorrect current password"
+                flash('Incorrect current password', 'error')
+                return redirect(url_for('user_profile'))
+        elif current_password or new_password:
+            # User provided one but not both
+            flash('Please provide both current and new password', 'error')
+            return redirect(url_for('user_profile'))
 
-        db.session.commit()
+        try:
+            db.session.commit()
+            flash('Profile updated successfully!', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash('Failed to update profile. Please try again.', 'error')
+            
         return redirect(url_for('user_profile'))
 
-    return render_template('profile.html', user=current_user)
+    # Get all teams for selection
+    teams = Team.query.all()
+    return render_template('profile.html', user=current_user, teams=teams)
 
 
 @app.route('/reset_password', methods=['GET', 'POST'])

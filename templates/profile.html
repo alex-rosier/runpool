@@ -1,23 +1,188 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>{{ user.name }}'s Profile</h2>
-<p>Email: {{ user.email }}</p>
-<form method="post" action="{{ url_for('user_profile') }}">
-<div>
-<label for="name">Name:</label>
-<input type="text" name="name" value="{{ user.name }}" required>
+<div class="container mt-4">
+    <!-- Profile Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="jumbotron bg-primary text-white">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="display-4">
+                            <i class="fas fa-user-circle mr-3"></i>{{ current_user.name }}'s Profile
+                        </h1>
+                        <p class="lead">Manage your account settings and preferences</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user-circle fa-5x text-light"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Content -->
+    <div class="row">
+        <!-- Profile Information Card -->
+        <div class="col-lg-8 mb-4">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-light">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-edit mr-2"></i>Profile Information
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ url_for('user_profile') }}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">
+                                    <i class="fas fa-user mr-2"></i>Full Name
+                                </label>
+                                <input type="text" 
+                                       class="form-control form-control-lg" 
+                                       name="name" 
+                                       value="{{ current_user.name }}" 
+                                       required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope mr-2"></i>Email Address
+                                </label>
+                                <input type="email" 
+                                       class="form-control form-control-lg" 
+                                       name="email" 
+                                       value="{{ current_user.email }}" 
+                                       required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="team_id" class="form-label">
+                                    <i class="fas fa-trophy mr-2"></i>Favorite Team
+                                </label>
+                                <select class="form-control form-control-lg" name="team_id" id="team_id">
+                                    <option value="0">No Team Selected</option>
+                                    {% for team in teams %}
+                                        <option value="{{ team.id }}" {% if current_user.team and current_user.team.id == team.id %}selected{% endif %}>
+                                            {{ team.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <small class="form-text text-muted">Select your favorite MLB team</small>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <h5 class="mb-3">
+                            <i class="fas fa-lock mr-2"></i>Change Password
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="current_password" class="form-label">Current Password</label>
+                                <input type="password" 
+                                       class="form-control" 
+                                       name="current_password" 
+                                       placeholder="Enter current password">
+                                <small class="form-text text-muted">Required to change password</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="new_password" class="form-label">New Password</label>
+                                <input type="password" 
+                                       class="form-control" 
+                                       name="new_password" 
+                                       pattern=".{8,}" 
+                                       placeholder="Minimum 8 characters">
+                                <small class="form-text text-muted">Minimum 8 characters required</small>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save mr-2"></i>Update Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Cards -->
+        <div class="col-lg-4">
+            <!-- Team Information -->
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-trophy mr-2"></i>Your Team
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    {% if current_user.team %}
+                        <i class="fas fa-baseball-ball fa-3x text-success mb-3"></i>
+                        <h4 class="text-success">{{ current_user.team.name }}</h4>
+                        <p class="text-muted mb-0">Your selected team</p>
+                    {% else %}
+                        <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No Team Selected</h5>
+                        <p class="text-muted mb-3">Choose your favorite team</p>
+                        <a href="{{ url_for('user_profile') }}" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-edit mr-1"></i>Select Team
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Account Stats -->
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar mr-2"></i>Account Stats
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="border-end">
+                                <h4 class="text-primary mb-1">{{ current_user.players|length }}</h4>
+                                <small class="text-muted">Active Games</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <h4 class="text-success mb-1">{{ current_user.team.name if current_user.team else 'N/A' }}</h4>
+                            <small class="text-muted">Team</small>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <small class="text-muted">Member since {{ current_user.id }}</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card border-0 shadow">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt mr-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-tachometer-alt mr-2"></i>Go to Dashboard
+                        </a>
+                        <a href="{{ url_for('create_game') }}" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-plus-circle mr-2"></i>Create New Game
+                        </a>
+                        <a href="{{ url_for('home') }}" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-home mr-2"></i>Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-<label for="email">Email:</label>
-<input type="email" name="email" value="{{ user.email }}" required>
-</div>
-<label for="current_password">Current Password:</label>
-<input type="password" name="current_password">
-<br>
-<label for="new_password">New Password (min. 8 characters):</label>
-<input type="password" name="new_password" pattern=".{8,}">
-<br>
-<button type="submit">Update profile</button>
-</form>
 {% endblock %}
