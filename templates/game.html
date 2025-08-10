@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="edit-game-container">
+    <div class="game-header">
+        <div class="game-title">Edit Game</div>
+        <div class="game-date">{{ game.start_date.strftime('%B %d, %Y') }}</div>
+    </div>
+    
+    <div class="scorecard-link">
+        <a href="{{ url_for('view_scorecard', game_token=game.token) }}" class="scorecard-button">View Live Scorecard</a>
+    </div>
+
+    <div class="form-container">
+        <div class="section-title">Current Players</div>
+        
+        <div class="players-list">
+            {% for player in players %}
+            <div class="player-card">
+                <div class="player-info">
+                    <div class="player-name">{{ player.user.name if player.user else player.non_registered_player.name }}</div>
+                    <div class="player-team">{{ player.team.name }}</div>
+                    <div class="player-score">Score: {{ player.score if player.score else 0 }}</div>
+                </div>
+                <div class="player-actions">
+                    <form method="post" action="{{ url_for('delete_player', game_id=game.id, player_id=player.id) }}" class="delete-form">
+                        <button type="submit" class="delete-button">Remove</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="section-title">Add New Player</div>
+        <form method="post" action="{{ url_for('add_player', game_id=game.id) }}" class="add-player-form">
+            <div class="input-container">
+                <label for="player_name">Player Name</label>
+                <input type="text" name="player_name" id="player_name" required>
+            </div>
+            <div class="input-container">
+                <label for="team_id">Team</label>
+                <select name="team_id" id="team_id" required>
+                    <option value="">Select a team</option>
+                    {% for team in teams %}
+                    <option value="{{ team.id }}">{{ team.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="add-player-button">Add Player</button>
+        </form>
+
+        <div class="danger-zone">
+            <div class="section-title danger-title">Danger Zone</div>
+            <form method="post" action="{{ url_for('delete_game', game_id=game.id) }}" class="delete-game-form">
+                <button type="submit" class="delete-game-button">Delete Game</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

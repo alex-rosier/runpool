@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="scorecard-container">
+    <div class="scorecard-header">
+        <div class="scorecard-title">Live Scorecard</div>
+        <div class="game-date">{{ game.start_date.strftime('%B %d, %Y') }}</div>
+    </div>
+
+    <div class="form-container">
+        <div class="scorecard-table-container">
+            <table class="scorecard-table">
+                <thead>
+                    <tr>
+                        <th class="team-header">Team</th>
+                        <th class="player-header">Player</th>
+                        <th class="score-header">Score</th>
+                        <th class="games-header">Games</th>
+                        {% for run_total in range(14) %}
+                        <th class="run-total-header">{{ run_total }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for team in teams %}
+                    <tr class="team-row">
+                        <td class="team-name">{{ team.name }}</td>
+                        {% set team_players = players|selectattr("team_id", "equalto", team.id)|list %}
+                        {% if team_players %}
+                            {% for player in team_players %}
+                            <td class="player-name">
+                                {% if player.user %}
+                                    {{ player.user.name }}
+                                {% elif player.non_registered_player %}
+                                    {{ player.non_registered_player.name }}
+                                {% endif %}
+                            </td>
+                            <td class="player-score">{{ player.score if player.score else 0 }}</td>
+                            <td class="games-played">{{ team.games_played(game.id) }}</td>
+                            {% endfor %}
+                        {% else %}
+                            <td class="player-name">No Player</td>
+                            <td class="player-score">-</td>
+                            <td class="games-played">{{ team.games_played(game.id) }}</td>
+                        {% endif %}
+                        
+                        {% for run_total in range(14) %}
+                        <td class="run-total-cell">
+                            {% if run_total in team_run_totals[team.id] %}
+                            <span class="checkmark">✓</span>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

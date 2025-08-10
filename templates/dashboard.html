@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Welcome to your dashboard, {{ current_user.name }}!</h1>
+<h2>Your Games</h2>
+<ul>
+{% for player in current_user.players %}
+<li>
+<a href="{{ url_for('view_game', game_id=player.game_id) }}">Game {{ player.game_id }} - {{ player.game.start_date.strftime('%Y-%m-%d') }}</a>
+</li>
+{% endfor %}
+</ul>
+{% endblock %}

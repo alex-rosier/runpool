@@ -1,0 +1,688 @@
+body {
+    font-family: 'Merriweather Sans', sans-serif;
+    
+}
+
+/* Login Page */
+
+.login-container {
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: white;
+    text-align: center; /* Center text horizontally */
+}
+
+.form-container {
+    background-color: #F8F8F8;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 12px 2px rgba(173, 173, 173, 0.25);
+    margin-top: 30px;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.input-container {
+    margin-bottom: 15px;
+}
+
+.input-container label {
+    display: block;
+    margin-bottom: 5px;
+    color: #414141;
+    font-size: 18px;
+    text-align: left;
+}
+
+.input-container input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 0.625rem;
+    font-size: 16px;
+    height: 4.625rem;
+    flex-shrink: 0; 
+    background: var(--colors-primary, #ffffff);
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.login-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #086374;
+    color: #F8F8F8;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-button:hover {
+    background-color: #064d56;
+}
+
+.additional-links {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.forgot-password {
+    color: #414141;
+    font-size: 16px;
+    text-decoration: none;
+}
+
+.signup-prompt {
+    margin-top: 10px;
+}
+
+.signup-link {
+    color: #086374;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.signup-link:hover {
+    text-decoration: underline;
+}
+
+ .welcome-back {
+    text-align: center;
+    color: #2C2C2C;
+    font-size: 36px;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 700;
+    margin-bottom: 10px; /* Adjust as needed */
+    margin: 0;
+}
+
+.login-resume {
+    color: #414141;
+    font-size: 22px;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 300;
+    line-height: 40px;
+    margin-bottom: 20px; /* Adjust as needed */
+    margin: 0;
+}
+
+/* Register Page */
+
+.register-container {
+    width: 100%;
+    max-width: 647px; /* Set a max-width for larger screens */
+    margin: auto; /* This will also help in centering for horizontal if flex doesn't apply */
+    padding: 20px;
+    box-sizing: border-box; /* Makes sure padding doesn't affect width */
+}
+
+.input-container-password {
+    background: #F8F8F8;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.input-container-password input {
+    border: none;
+    width: calc(100% - 20px); /* Subtract padding */
+    padding: 15px 10px;
+    font-size: 22px;
+    color: #414141;
+    background: none;
+}
+
+.title {
+    color: #252525;
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 40px;
+}
+
+.password-instructions {
+    font-size: 22px;
+    color: #414141;
+    font-weight: 300;
+    line-height: 40px;
+    margin-bottom: 20px;
+}
+
+.register-button {
+    background: #086374;
+    color: #F8F8F8;
+    font-size: 22px;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 30px;
+    cursor: pointer;
+}
+
+.register-button:hover {
+    background: #064d56;
+}
+
+.login-prompt {
+    font-size: 22px;
+    color: #414141;
+    font-weight: 300;
+}
+
+.login-link {
+    color: #086374;
+    font-weight: 400;
+    text-decoration: none;
+    font-size: 22px;
+    margin-left: 5px;
+}
+
+.login-link:hover {
+    text-decoration: underline;
+}
+
+/* Forgot Password */ 
+
+/* Reuse the styles from the login page */
+.password-reset-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
+
+.title {
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    margin-bottom: 20px;
+}
+
+.password-reset-form {
+    margin-bottom: 30px;
+}
+
+.input-container {
+    margin-bottom: 20px;
+}
+
+.password-reset-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #086374;
+    color: #F8F8F8;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.password-reset-button:hover {
+    background-color: #064d56;
+}
+
+.back-to-login {
+    margin-top: 20px;
+}
+
+.back-link {
+    color: #086374;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* Create Game Page */ 
+
+/* Reuse styles from previous pages */
+.create-game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
+
+.title {
+    margin-bottom: 20px;
+}
+
+
+.players-container {
+    margin-bottom: 20px;
+}
+
+.add-player-button {
+    background: none;
+    border: none;
+    color: #086374;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.continue-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #086374;
+    color: #F8F8F8;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.continue-button:hover {
+    background-color: #064d56;
+}
+
+.back-link-container {
+    margin-top: 20px;
+}
+
+.back-link {
+    color: #086374;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.player-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.remove-player-button {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+}
+
+.player-field {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    /* Additional styles */
+}
+
+.current-user-container {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f0f8ff;
+    border: 2px solid #086374;
+    border-radius: 8px;
+}
+
+.current-user-container label {
+    display: block;
+    margin-bottom: 8px;
+    color: #086374;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.current-user-container select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #086374;
+    border-radius: 0.625rem;
+    font-size: 16px;
+    height: 4.625rem;
+    background: #ffffff;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+/* Edit Game Page */
+
+.edit-game-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: white;
+    text-align: center;
+    padding: 40px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.game-header {
+    margin-bottom: 30px;
+}
+
+.game-title {
+    color: #2C2C2C;
+    font-size: 36px;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.game-date {
+    color: #414141;
+    font-size: 22px;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 300;
+    line-height: 40px;
+}
+
+.scorecard-link {
+    margin-bottom: 30px;
+}
+
+.scorecard-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #086374;
+    color: #F8F8F8;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.scorecard-button:hover {
+    background-color: #064d56;
+}
+
+.section-title {
+    color: #2C2C2C;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.danger-title {
+    color: #dc3545;
+}
+
+.players-list {
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.player-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #F8F8F8;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0px 2px 8px rgba(173, 173, 173, 0.15);
+}
+
+.player-info {
+    text-align: left;
+}
+
+.player-name {
+    color: #2C2C2C;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.player-team {
+    color: #086374;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.player-score {
+    color: #414141;
+    font-size: 14px;
+}
+
+.delete-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
+}
+
+.add-player-form {
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.add-player-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #086374;
+    color: #F8F8F8;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.add-player-button:hover {
+    background-color: #064d56;
+}
+
+.danger-zone {
+    width: 100%;
+    padding: 20px;
+    background-color: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 10px;
+}
+
+.delete-game-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.delete-game-button:hover {
+    background-color: #c82333;
+}
+
+/* Update existing input-container styles for select elements */
+.input-container select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 0.625rem;
+    font-size: 16px;
+    height: 4.625rem;
+    flex-shrink: 0; 
+    background: var(--colors-primary, #ffffff);
+    box-sizing: border-box;
+    text-align: left;
+}
+
+/* Scorecard Page */
+
+.scorecard-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: white;
+    text-align: center;
+    padding: 40px;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.scorecard-header {
+    margin-bottom: 30px;
+}
+
+.scorecard-title {
+    color: #2C2C2C;
+    font-size: 36px;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.game-date {
+    color: #414141;
+    font-size: 22px;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 300;
+    line-height: 40px;
+}
+
+.scorecard-table-container {
+    width: 100%;
+    overflow-x: auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 2px 12px 2px rgba(173, 173, 173, 0.25);
+}
+
+.scorecard-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.scorecard-table th {
+    background-color: #F8F8F8;
+    color: #2C2C2C;
+    font-weight: 600;
+    padding: 15px 12px;
+    text-align: center;
+    border-bottom: 2px solid #e9ecef;
+    font-size: 14px;
+    min-width: 60px;
+}
+
+.team-header {
+    min-width: 80px !important;
+    text-align: left !important;
+}
+
+.player-header {
+    min-width: 120px !important;
+    text-align: left !important;
+}
+
+.score-header {
+    min-width: 80px !important;
+}
+
+.games-header {
+    min-width: 80px !important;
+}
+
+.run-total-header {
+    min-width: 50px !important;
+    font-size: 12px !important;
+}
+
+.scorecard-table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #f1f3f4;
+    font-size: 14px;
+}
+
+.team-name {
+    font-weight: 600;
+    color: #086374;
+    text-align: left !important;
+}
+
+.player-name {
+    text-align: left !important;
+    color: #2C2C2C;
+    font-weight: 500;
+}
+
+.player-score {
+    font-weight: 600;
+    color: #2C2C2C;
+}
+
+.games-played {
+    font-weight: 500;
+    color: #414141;
+}
+
+.run-total-cell {
+    min-width: 50px;
+    position: relative;
+}
+
+.checkmark {
+    color: #28a745;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.team-row:hover {
+    background-color: #f8f9fa;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 1200px) {
+    .scorecard-container {
+        max-width: 100%;
+        padding: 20px;
+    }
+    
+    .scorecard-table th,
+    .scorecard-table td {
+        padding: 8px 6px;
+        font-size: 12px;
+    }
+    
+    .run-total-header {
+        min-width: 40px !important;
+        font-size: 11px !important;
+    }
+    
+    .run-total-cell {
+        min-width: 40px;
+    }
+}

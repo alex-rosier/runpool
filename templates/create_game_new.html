@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="create-game-container">
+    <h2 class="title">Set up your pool</h2>
+    <form method="post" class="create-game-form" action="{{ url_for('create_game') }}">
+        <div class="input-container">
+            <input type="text" name="pool_name" placeholder="Pick a pool name" required>
+        </div>
+        <div class="input-container">
+            <input type="date" name="start_date" placeholder="Pick a start date for the pool" required>
+        </div>
+        
+        <!-- Current user's team selection -->
+        <div class="current-user-container">
+            <label for="current_user_team">Your team</label>
+            <select name="team_id" id="current_user_team" required>
+                <option value="">Select your team</option>
+                {% for team in teams %}
+                <option value="{{ team.id }}">{{ team.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="players-container">
+            <label for="player_name">Add additional players</label>
+            <!-- Container for player fields -->
+            <div class="player-field">
+                <input type="text" name="player_names[]" placeholder="Player name" required>
+                <select name="team_id[]" required>
+                    <option value="">Select team</option>
+                    {% for team in teams %}
+                    <option value="{{ team.id }}">{{ team.name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="button" class="remove-player-button" onclick="removePlayerField(this)">Remove</button>
+            </div>
+            <!-- More player fields will be added here -->
+        </div>
+        <button type="button" class="add-player-button">Add more members</button>
+        
+        <button type="submit" class="continue-button">Continue</button>
+    </form>
+    <div class="back-link-container">
+        <a href="{{ url_for('dashboard') }}" class="back-link">⟨ Back to Dashboard</a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('.add-player-button').addEventListener('click', addPlayerField);
+    });
+
+    function addPlayerField() {
+        const playersContainer = document.querySelector('.players-container');
+        let newField = document.createElement('div');
+        newField.classList.add('player-field');
+        newField.innerHTML = `
+            <input type="text" name="player_names[]" placeholder="Player name" required>
+            <select name="team_id[]" required>
+                <option value="">Select team</option>
+                {% for team in teams %}
+                <option value="{{ team.id }}">{{ team.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="button" class="remove-player-button" onclick="removePlayerField(this)">Remove</button>`;
+        playersContainer.appendChild(newField);
+    }
+
+    function removePlayerField(button) {
+        button.parentElement.remove();
+    }
+</script>
+
+{% endblock %}

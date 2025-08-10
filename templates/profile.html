@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ user.name }}'s Profile</h2>
+<p>Email: {{ user.email }}</p>
+<form method="post" action="{{ url_for('user_profile') }}">
+<div>
+<label for="name">Name:</label>
+<input type="text" name="name" value="{{ user.name }}" required>
+</div>
+<div>
+<label for="email">Email:</label>
+<input type="email" name="email" value="{{ user.email }}" required>
+</div>
+<label for="current_password">Current Password:</label>
+<input type="password" name="current_password">
+<br>
+<label for="new_password">New Password (min. 8 characters):</label>
+<input type="password" name="new_password" pattern=".{8,}">
+<br>
+<button type="submit">Update profile</button>
+</form>
+{% endblock %}

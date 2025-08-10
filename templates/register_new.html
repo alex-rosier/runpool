@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="register-container">
+    <h2 class="title">Sign up to start a 13 Run Pool</h2>
+    <form id="registrationForm" action="{{ url_for('register') }}" method="POST" class="register-form">
+        <div class="input-container-password">
+            <input type="text" name="name" id="name" placeholder="Name" required>
+        </div>
+        <div class="input-container-password">
+            <input type="email" name="email" id="email" placeholder="Email" required>
+        </div>
+        <div class="input-container-password">
+            <input type="password" name="password" id="password" placeholder="Password" required>
+        </div>
+        <div class="input-container-password">
+            <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm password" required>
+        </div>
+        <div class="input-container-password">
+            <input type="number" name="team_id" id="team_id" placeholder="Team ID" required>
+        </div>
+        <p class="password-instructions">8 characters minimum • 1 special character • 1 number minimum • 1 uppercase character</p>
+        <button type="submit" class="register-button">Sign Up</button>
+    </form>
+    <div class="login-prompt">
+        Already have an account? <a href="{{ url_for('login') }}" class="login-link">Log In</a>
+    </div>
+</div>
+{% endblock %}
