@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -20,6 +20,10 @@ import pdp
 from flask_mail import Mail, Message
 import schedule
 import time
+
+from google_auth_oauthlib.flow import Flow
+from google.oauth2 import id_token
+from google.auth.transport import requests
 
 TEAM_NAME_MAPPING = {
     'Arizona Diamondbacks': 'ARI',
@@ -263,12 +267,12 @@ def register():
         # Check if password and confirm password match
         if password != confirm_password:
             flash('Passwords do not match', 'error')
-            return render_template('register_new.html')
+            return render_template('register_email.html')
 
         # Check if password meets the policy
         if policy.test(password):
             flash('Password is not strong enough. Please choose a stronger password.', 'error')
-            return render_template('register_new.html')
+            return render_template('register_email.html')
 
         password = bcrypt.generate_password_hash(password).decode('utf-8')
 
@@ -284,8 +288,13 @@ def register():
             print(f"Failed to commit changes to user registration: {e}")
             db.session.rollback()  # Rollback the session to a clean state
             flash('Registration failed. Please try again.', 'error')
-            return render_template('register_new.html')
-    return render_template('register_new.html')
+            return render_template('register_email.html')
+    return render_template('register.html')
+
+
+@app.route('/register_email')
+def register_email():
+    return render_template('register_email.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -297,7 +306,7 @@ def login():
 
         if user and bcrypt.check_password_hash(user.password, password):
             login_user(user)
-            flash(f'Welcome back, {user.name}!', 'success')
+            flash(f'Welcome, {user.name}!', 'success')
             return redirect(url_for('dashboard'))
         else:
             flash('Invalid email or password', 'error')
@@ -543,6 +552,85 @@ def reset_password(token):
         db.session.commit()
         return "Your password has been reset."
     return render_template('reset_password.html', token=token)
+
+
+@app.route('/auth/google')
+def google_auth():
+    flow = Flow.from_client_config(
+        {
+            "web": {
+                "client_id": os.getenv('GOOGLE_CLIENT_ID'),
+                "client_secret": os.getenv('GOOGLE_CLIENT_SECRET'),
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "redirect_uris": [os.getenv('GOOGLE_REDIRECT_URI')]
+            }
+        },
+        scopes=['openid', 'email', 'profile']
+    )
+    
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true'
+    )
+    
+    session['state'] = state
+    return redirect(authorization_url)
+
+
+@app.route('/auth/google/callback')
+def google_callback():
+    try:
+        flow = Flow.from_client_config(
+            {
+                "web": {
+                    "client_id": os.getenv('GOOGLE_CLIENT_ID'),
+                    "client_secret": os.getenv('GOOGLE_CLIENT_SECRET'),
+                    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                    "token_uri": "https://oauth2.googleapis.com/token",
+                    "redirect_uris": [os.getenv('GOOGLE_REDIRECT_URI')]
+                }
+            },
+            scopes=['openid', 'email', 'profile']
+        )
+        
+        flow.fetch_token(authorization_response=request.url)
+        
+        # Get user info from Google
+        id_info = id_token.verify_oauth2_token(
+            flow.credentials.id_token, 
+            requests.Request(), 
+            os.getenv('GOOGLE_CLIENT_ID')
+        )
+        
+        email = id_info['email']
+        name = id_info.get('name', email.split('@')[0])
+        
+        # Check if user already exists
+        user = User.query.filter_by(email=email).first()
+        
+        if user:
+            # User exists, log them in
+            login_user(user)
+            flash(f'Welcome, {user.name}!', 'success')
+        else:
+            # Create new user
+            user = User(
+                name=name,
+                email=email,
+                password=bcrypt.generate_password_hash(secrets.token_urlsafe(32)).decode('utf-8')
+            )
+            db.session.add(user)
+            db.session.commit()
+            
+            login_user(user)
+            flash(f'Welcome, {user.name}!', 'success')
+        
+        return redirect(url_for('dashboard'))
+        
+    except Exception as e:
+        flash('Google authentication failed. Please try again.', 'error')
+        return redirect(url_for('register'))
 
 
 @app.route('/game/<int:game_id>/delete_player/<int:player_id>', methods=['POST'])
@@ -1033,5 +1121,5 @@ if __name__ == '__main__':
     scheduler_thread = threading.Thread(target=start_scheduler)
     scheduler_thread.start()
 
-    # Start the Flask application on port 5001 to avoid conflicts
+    # Start the Flask application on port 5001 (5000 is used by macOS AirPlay)
     app.run(debug=True, port=5001)

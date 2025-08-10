@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="register-container">
+    <h1 class="title">Create your account</h1>
+    <p class="subtitle">Sign up with your email address</p>
+    
+    <!-- Email Registration Form -->
+    <form id="registrationForm" action="{{ url_for('register') }}" method="POST">
+        <div class="input-container">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" id="name" name="name" class="form-control form-control-lg" required>
+        </div>
+        
+        <div class="input-container">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" name="email" class="form-control form-control-lg" required>
+        </div>
+        
+        <div class="input-container">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" id="password" name="password" class="form-control form-control-lg" required>
+        </div>
+        
+        <div class="input-container">
+            <label for="confirm_password" class="form-label">Confirm password</label>
+            <input type="password" id="confirm_password" name="confirm_password" class="form-control form-control-lg" required>
+        </div>
+        
+        <div class="input-container">
+            <label for="team_id" class="form-label">Team ID</label>
+            <input type="number" id="team_id" name="team_id" class="form-control form-control-lg" required>
+        </div>
+        
+        <div class="password-requirements">
+            8 characters minimum • 1 special character • 1 number minimum • 1 uppercase character
+        </div>
+        
+        <button type="submit" class="register-button">
+            <i class="fas fa-user-plus"></i>
+            Sign up with Email
+        </button>
+    </form>
+    
+    <!-- Back to options -->
+    <div class="back-to-options">
+        <a href="{{ url_for('register') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            Back to sign up options
+        </a>
+    </div>
+    
+    <!-- Login Prompt -->
+    <div class="login-prompt">
+        Already have an account? 
+        <a href="{{ url_for('login') }}" class="login-link">Log In</a>
+    </div>
+</div>
+
+<script>
+    document.getElementById("registrationForm").addEventListener("submit", function(event){
+        var valid = true;
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("confirm_password").value;
+    
+        if (password !== confirmPassword) {
+            alert("Passwords do not match!");
+            valid = false;
+        }
+    
+        if (password.length < 8) {
+            alert("Password must be at least 8 characters long!");
+            valid = false;
+        }
+    
+        // Add more validation logic as needed
+    
+        if (!valid) {
+            event.preventDefault(); // Prevent form submission if validation fails
+        }
+    });
+</script>
+{% endblock %}

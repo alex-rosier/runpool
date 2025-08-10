@@ -1,0 +1,74 @@
+/* Profile Page Specific Styles */
+.profile-avatar {
+    animation: fadeIn 0.8s ease-in;
+}
+
+.profile-avatar i {
+    transition: transform 0.3s ease-in-out;
+}
+
+.profile-avatar:hover i {
+    transform: scale(1.1);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #2C2C2C;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border-radius: 0.5rem;
+    border: 2px solid #e9ecef;
+    transition: all 0.2s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #086374;
+    box-shadow: 0 0 0 0.2rem rgba(8, 99, 116, 0.25);
+    transform: translateY(-1px);
+}
+
+.form-control-lg {
+    height: 3.5rem;
+    font-size: 1.1rem;
+}
+
+.form-text {
+    font-size: 0.875rem;
+}
+
+/* Card Header Enhancements */
+.card-header.bg-success,
+.card-header.bg-info,
+.card-header.bg-warning {
+    border-radius: 0.5rem 0.5rem 0 0 !important;
+}
+
+/* Stats Cards */
+.border-end {
+    border-right: 2px solid #e9ecef !important;
+}
+
+/* Quick Actions */
+.btn-outline-primary:hover,
+.btn-outline-success:hover,
+.btn-outline-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Responsive Profile */
+@media (max-width: 768px) {
+    .profile-avatar i {
+        font-size: 3rem !important;
+    }
+    
+    .jumbotron .display-4 {
+        font-size: 2rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}

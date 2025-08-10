@@ -1,0 +1,301 @@
+/* Game Management Styles - Create Game, Edit Game, Game Management */
+
+/* Create Game Page */
+.create-game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
+
+.players-container {
+    margin-bottom: 20px;
+}
+
+.add-player-button {
+    background: none;
+    border: none;
+    color: #086374;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.continue-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #086374;
+    color: #F8F8F8;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.continue-button:hover {
+    background-color: #064d56;
+}
+
+.back-link-container {
+    margin-top: 20px;
+}
+
+.back-link {
+    color: #086374;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.player-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.remove-player-button {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+}
+
+.current-user-container {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f0f8ff;
+    border: 2px solid #086374;
+    border-radius: 8px;
+}
+
+.current-user-container label {
+    display: block;
+    margin-bottom: 8px;
+    color: #086374;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.current-user-container select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #086374;
+    border-radius: 0.625rem;
+    font-size: 16px;
+    height: 4.625rem;
+    background: #ffffff;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+/* Edit Game Page */
+.edit-game-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: white;
+    text-align: center;
+    padding: 40px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.game-header {
+    margin-bottom: 30px;
+}
+
+.game-title {
+    color: #2C2C2C;
+    font-size: 36px;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.game-date {
+    color: #414141;
+    font-size: 22px;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 300;
+    line-height: 40px;
+}
+
+.scorecard-link {
+    margin-bottom: 30px;
+}
+
+.scorecard-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #086374;
+    color: #F8F8F8;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.scorecard-button:hover {
+    background-color: #064d56;
+}
+
+.section-title {
+    color: #2C2C2C;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.danger-title {
+    color: #dc3545;
+}
+
+.players-list {
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.player-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #F8F8F8;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0px 2px 8px rgba(173, 173, 173, 0.15);
+}
+
+.player-info {
+    text-align: left;
+}
+
+.player-name {
+    color: #2C2C2C;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.player-team {
+    color: #086374;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.player-score {
+    color: #414141;
+    font-size: 14px;
+}
+
+.delete-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
+}
+
+.add-player-form {
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.add-player-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #086374;
+    color: #F8F8F8;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.add-player-button:hover {
+    background-color: #064d56;
+}
+
+.danger-zone {
+    width: 100%;
+    padding: 20px;
+    background-color: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 10px;
+}
+
+.delete-game-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.delete-game-button:hover {
+    background-color: #c82333;
+}
+
+/* Update existing input-container styles for select elements */
+.input-container select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 0.625rem;
+    font-size: 16px;
+    height: 4.625rem;
+    flex-shrink: 0; 
+    background: var(--colors-primary, #ffffff);
+    box-sizing: border-box;
+    text-align: left;
+}
+
+/* Back to options link */
+.back-to-options {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.back-link {
+    color: #086374;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+    transform: translateX(-2px);
+}
+
+.back-link i {
+    margin-right: 8px;
+}

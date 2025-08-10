@@ -1,29 +1,61 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
 <div class="register-container">
-    <h2 class="title">Sign up to start a 13 Run Pool</h2>
-    <form id="registrationForm" action="{{ url_for('register') }}" method="POST" class="register-form">
-        <div class="input-container-password">
-            <input type="text" name="name" id="name" placeholder="Name" required>
+    <div class="register-form">
+        <h2 class="title">Create your account</h2>
+        <p class="subtitle">Sign up in seconds to start your 13 Run Pool game</p>
+        
+        <!-- Google Sign Up Button -->
+        <a href="{{ url_for('google_auth') }}" class="google-signup-button">
+            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="google-logo">
+            Sign up with Google
+        </a>
+        
+        <!-- Separator -->
+        <div class="separator">
+            <span>or</span>
         </div>
-        <div class="input-container-password">
-            <input type="email" name="email" id="email" placeholder="Email" required>
+        
+        <!-- Email Sign Up Button (initially just a button, form appears on click) -->
+        <button type="button" class="email-signup-button" onclick="showEmailForm()">
+            <i class="fas fa-envelope"></i>
+            Sign up with Email
+        </button>
+        
+        <!-- Hidden Email Form (initially hidden) -->
+        <form id="emailRegistrationForm" action="{{ url_for('register') }}" method="POST" class="email-form" style="display: none;">
+            <div class="input-container-password">
+                <input type="text" name="name" id="name" placeholder="Full Name" required>
+            </div>
+            <div class="input-container-password">
+                <input type="email" name="email" id="email" placeholder="Email Address" required>
+            </div>
+            <div class="input-container-password">
+                <input type="password" name="password" id="password" placeholder="Password" required>
+            </div>
+            <div class="input-container-password">
+                <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required>
+            </div>
+            <div class="input-container-password">
+                <input type="number" name="team_id" id="team_id" placeholder="Team ID" required>
+            </div>
+            
+            <p class="password-instructions">8 characters minimum • 1 special character • 1 number minimum • 1 uppercase character</p>
+            
+            <button type="submit" class="register-button">Create Account</button>
+        </form>
+        
+        <div class="login-prompt">
+            Already have an account? <a href="{{ url_for('login') }}" class="login-link">Log In</a>
         </div>
-        <div class="input-container-password">
-            <input type="password" name="password" id="password" placeholder="Password" required>
-        </div>
-        <div class="input-container-password">
-            <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm password" required>
-        </div>
-        <div class="input-container-password">
-            <input type="number" name="team_id" id="team_id" placeholder="Team ID" required>
-        </div>
-        <p class="password-instructions">8 characters minimum • 1 special character • 1 number minimum • 1 uppercase character</p>
-        <button type="submit" class="register-button">Sign Up</button>
-    </form>
-    <div class="login-prompt">
-        Already have an account? <a href="{{ url_for('login') }}" class="login-link">Log In</a>
     </div>
 </div>
+
+<script>
+function showEmailForm() {
+    document.getElementById('emailRegistrationForm').style.display = 'block';
+    document.querySelector('.email-signup-button').style.display = 'none';
+}
+</script>
 {% endblock %}

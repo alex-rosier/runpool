@@ -16,4 +16,7 @@ requests==2.30.0
 schedule==1.2.0
 password-strength==0.0.3.post2
 pdp==0.3.0
-alembic==1.10.4
+alembic==1.12.0
+google-auth==2.40.3
+google-auth-oauthlib==1.2.2
+google-auth-httplib2==0.2.0

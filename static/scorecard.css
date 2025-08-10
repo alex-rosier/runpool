@@ -1,0 +1,152 @@
+/* Scorecard Page Styles */
+
+.scorecard-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: white;
+    text-align: center;
+    padding: 40px;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.scorecard-header {
+    margin-bottom: 30px;
+}
+
+.scorecard-title {
+    color: #2C2C2C;
+    font-size: 36px;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.game-date {
+    color: #414141;
+    font-size: 22px;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 300;
+    line-height: 40px;
+}
+
+.scorecard-table-container {
+    width: 100%;
+    overflow-x: auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 2px 12px 2px rgba(173, 173, 173, 0.25);
+}
+
+.scorecard-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.scorecard-table th {
+    background-color: #F8F8F8;
+    color: #2C2C2C;
+    font-weight: 600;
+    padding: 15px 12px;
+    text-align: center;
+    border-bottom: 2px solid #e9ecef;
+    font-size: 14px;
+    min-width: 60px;
+}
+
+.team-header {
+    min-width: 80px !important;
+    text-align: left !important;
+}
+
+.player-header {
+    min-width: 120px !important;
+    text-align: left !important;
+}
+
+.score-header {
+    min-width: 80px !important;
+}
+
+.games-header {
+    min-width: 80px !important;
+}
+
+.run-total-header {
+    min-width: 50px !important;
+    font-size: 12px !important;
+}
+
+.scorecard-table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #f1f3f4;
+    font-size: 14px;
+}
+
+.team-name {
+    font-weight: 600;
+    color: #086374;
+    text-align: left !important;
+}
+
+.player-name {
+    text-align: left !important;
+    color: #2C2C2C;
+    font-weight: 500;
+}
+
+.player-score {
+    font-weight: 600;
+    color: #2C2C2C;
+}
+
+.games-played {
+    font-weight: 500;
+    color: #414141;
+}
+
+.run-total-cell {
+    min-width: 50px;
+    position: relative;
+}
+
+.checkmark {
+    color: #28a745;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.team-row:hover {
+    background-color: #f8f9fa;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 1200px) {
+    .scorecard-container {
+        max-width: 100%;
+        padding: 20px;
+    }
+    
+    .scorecard-table th,
+    .scorecard-table td {
+        padding: 8px 6px;
+        font-size: 12px;
+    }
+    
+    .run-total-header {
+        min-width: 40px !important;
+        font-size: 11px !important;
+    }
+    
+    .run-total-cell {
+        min-width: 40px;
+    }
+}

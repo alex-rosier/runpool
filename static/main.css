@@ -1,0 +1,43 @@
+/* Main CSS File - Imports all modular stylesheets */
+
+/* Import base styles and global utilities */
+@import url('base.css');
+
+/* Import authentication styles */
+@import url('auth.css');
+
+/* Import profile styles */
+@import url('profile.css');
+
+/* Import game management styles */
+@import url('game.css');
+
+/* Import scorecard styles */
+@import url('scorecard.css');
+
+/* Import component styles */
+@import url('components.css');
+
+/* 
+ * This file serves as the main entry point for all CSS.
+ * 
+ * File Structure:
+ * - base.css: Global styles, resets, common utilities
+ * - auth.css: Login, register, password reset pages
+ * - profile.css: Profile page and related components
+ * - game.css: Game creation, editing, and management
+ * - scorecard.css: Scorecard display and table styles
+ * - components.css: Reusable UI components (modals, buttons, etc.)
+ * 
+ * Benefits of this modular approach:
+ * - Easier to maintain and debug specific features
+ * - Better organization and readability
+ * - Easier to find and modify specific styles
+ * - Reduced merge conflicts in team development
+ * - Better separation of concerns
+ * 
+ * To add new styles:
+ * 1. Create a new CSS file for the feature
+ * 2. Add the @import statement above
+ * 3. Keep related styles together in the same file
+ */

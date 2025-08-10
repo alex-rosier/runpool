@@ -1,0 +1,12 @@
+# Flask Configuration
+SECRET_KEY=your_secret_key_here
+DATABASE_URI=sqlite:///may29_run_pool_new_api.db
+
+# Email Configuration
+MAIL_USERNAME=your_email@gmail.com
+MAIL_PASSWORD=your_email_password
+
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+GOOGLE_REDIRECT_URI=http://localhost:5000/auth/google/callback
