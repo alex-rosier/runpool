@@ -1,6 +1,137 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Welcome to the Run Pool App!</h1>
-<h6>We're glad you're here.</h6>
+<div class="container-fluid">
+    <!-- Hero Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="jumbotron bg-primary text-white text-center">
+                <h1 class="display-3">
+                    <i class="fas fa-baseball-ball mr-4"></i>Run Pool
+                </h1>
+                <p class="lead">The ultimate fantasy baseball experience where you predict MLB game outcomes and compete with friends!</p>
+                <hr class="my-4">
+                <div class="row justify-content-center">
+                    {% if current_user.is_authenticated %}
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-lg btn-block">
+                                <i class="fas fa-tachometer-alt mr-2"></i>Go to Dashboard
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ url_for('create_game') }}" class="btn btn-outline-light btn-lg btn-block">
+                                <i class="fas fa-plus-circle mr-2"></i>Create New Game
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ url_for('register') }}" class="btn btn-light btn-lg btn-block">
+                                <i class="fas fa-user-plus mr-2"></i>Get Started
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg btn-block">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row py-5">
+        <div class="col-12 text-center mb-5">
+            <h2 class="display-4">How It Works</h2>
+            <p class="lead text-muted">Simple, fun, and competitive baseball pool management</p>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                    <h4>Create Your Pool</h4>
+                    <p class="text-muted">Set up a run pool game with friends and family. Choose your teams and start date.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-chart-line fa-3x text-success mb-3"></i>
+                    <h4>Track Scores</h4>
+                    <p class="text-muted">Real-time MLB score updates automatically calculate your pool standings.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <i class="fas fa-trophy fa-3x text-warning mb-3"></i>
+                    <h4>Compete & Win</h4>
+                    <p class="text-muted">See who can predict the best team performance and claim victory!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="row py-5 bg-light">
+        <div class="col-12 text-center mb-5">
+            <h2 class="display-4">Why Choose Run Pool?</h2>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="text-center">
+                <i class="fas fa-mobile-alt fa-2x text-primary mb-2"></i>
+                <h5>Mobile Friendly</h5>
+                <p class="text-muted">Access your pools anywhere, anytime</p>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="text-center">
+                <i class="fas fa-shield-alt fa-2x text-success mb-2"></i>
+                <h5>Secure</h5>
+                <p class="text-muted">Your data is protected and private</p>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="text-center">
+                <i class="fas fa-sync fa-2x text-info mb-2"></i>
+                <h5>Real-time Updates</h5>
+                <p class="text-muted">Live MLB scores and standings</p>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="text-center">
+                <i class="fas fa-heart fa-2x text-danger mb-2"></i>
+                <h5>Easy to Use</h5>
+                <p class="text-muted">Simple interface for all skill levels</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="row py-5">
+        <div class="col-12 text-center">
+            <h2 class="display-4 mb-4">Ready to Start?</h2>
+            <p class="lead mb-4">Join thousands of baseball fans managing their run pools</p>
+            {% if not current_user.is_authenticated %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-rocket mr-2"></i>Create Your First Pool
+                </a>
+            {% else %}
+                <a href="{{ url_for('create_game') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus-circle mr-2"></i>Create New Game
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

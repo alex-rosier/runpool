@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -100,6 +100,10 @@ bcrypt = Bcrypt(app)
 @app.route('/')
 def index():
     return redirect(url_for('home'))
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
 
 
 @app.route('/dashboard')
@@ -249,11 +253,13 @@ def register():
 
         # Check if password and confirm password match
         if password != confirm_password:
-            return "Passwords do not match"
+            flash('Passwords do not match', 'error')
+            return render_template('register_new.html')
 
         # Check if password meets the policy
         if policy.test(password):
-            return "Password is not strong enough"
+            flash('Password is not strong enough. Please choose a stronger password.', 'error')
+            return render_template('register_new.html')
 
         password = bcrypt.generate_password_hash(password).decode('utf-8')
 
@@ -263,11 +269,13 @@ def register():
         try:
             db.session.commit()
             print("Successfully committed changes to user registration.")
+            flash('Registration successful! Please log in.', 'success')
+            return redirect(url_for('login'))
         except Exception as e:
             print(f"Failed to commit changes to user registration: {e}")
             db.session.rollback()  # Rollback the session to a clean state
-
-        return redirect(url_for('login'))
+            flash('Registration failed. Please try again.', 'error')
+            return render_template('register_new.html')
     return render_template('register_new.html')
 
 
@@ -280,9 +288,11 @@ def login():
 
         if user and bcrypt.check_password_hash(user.password, password):
             login_user(user)
-            return redirect(url_for('index'))
+            flash(f'Welcome back, {user.name}!', 'success')
+            return redirect(url_for('dashboard'))
         else:
-            return "Invalid email or password"
+            flash('Invalid email or password', 'error')
+            return render_template('login_new.html')
     return render_template('login_new.html')
 
 
@@ -343,12 +353,14 @@ def create_game():
         try:
             db.session.commit()
             print(f"Successfully created game {game.id} with {len(player_names) + 1} players")
+            flash(f'Game created successfully! Game ID: {game.id}', 'success')
             # Redirect to the game view page with the new game ID
             return redirect(url_for('view_game', game_id=game.id))
         except Exception as e:
             print(f"Failed to commit changes to game creation: {e}")
             db.session.rollback()
-            return "Failed to create game. Please try again."
+            flash('Failed to create game. Please try again.', 'error')
+            return render_template('create_game_new.html', teams=teams)
 
     # Add the following lines to print all game tokens in the database
     all_games = Game.query.all()
