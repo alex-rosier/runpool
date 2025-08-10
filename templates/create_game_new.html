@@ -2,7 +2,8 @@
 
 {% block content %}
 <div class="create-game-container">
-    <h2 class="title">Set up your pool</h2>
+    <h2 class="title">Set up your 13 Run Pool</h2>
+    <p class="subtitle">Just a few quick details. You can add other players at any time.</p>
     <form method="post" class="create-game-form" action="{{ url_for('create_game') }}">
         <div class="input-container">
             <input type="text" name="pool_name" placeholder="Pick a pool name" required>
