@@ -62,6 +62,62 @@
     background-color: #064d56;
 }
 
+.oauth-section {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.oauth-divider {
+    position: relative;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.oauth-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: #ddd;
+}
+
+.oauth-divider span {
+    background-color: #F8F8F8;
+    padding: 0 15px;
+    color: #666;
+    font-size: 14px;
+}
+
+.google-oauth-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px 16px;
+    background-color: white;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    gap: 10px;
+}
+
+.google-oauth-button:hover {
+    background-color: #f8f8f8;
+    border-color: #ccc;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.google-oauth-button svg {
+    flex-shrink: 0;
+}
+
 .additional-links {
     text-align: center;
     margin-top: 20px;

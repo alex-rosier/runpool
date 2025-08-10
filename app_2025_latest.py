@@ -24,6 +24,10 @@ import time
 from google_auth_oauthlib.flow import Flow
 from google.oauth2 import id_token
 from google.auth.transport import requests
+import os
+
+# Allow OAuth2 to work with HTTP for local development
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 TEAM_NAME_MAPPING = {
     'Arizona Diamondbacks': 'ARI',
@@ -556,81 +560,156 @@ def reset_password(token):
 
 @app.route('/auth/google')
 def google_auth():
-    flow = Flow.from_client_config(
-        {
-            "web": {
-                "client_id": os.getenv('GOOGLE_CLIENT_ID'),
-                "client_secret": os.getenv('GOOGLE_CLIENT_SECRET'),
-                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                "token_uri": "https://oauth2.googleapis.com/token",
-                "redirect_uris": [os.getenv('GOOGLE_REDIRECT_URI')]
-            }
-        },
-        scopes=['openid', 'email', 'profile']
-    )
+    # Check if required environment variables are set
+    client_id = os.getenv('GOOGLE_CLIENT_ID')
+    client_secret = os.getenv('GOOGLE_CLIENT_SECRET')
+    redirect_uri = os.getenv('GOOGLE_REDIRECT_URI')
     
-    authorization_url, state = flow.authorization_url(
-        access_type='offline',
-        include_granted_scopes='true'
-    )
+    if not all([client_id, client_secret, redirect_uri]):
+        flash('Google OAuth configuration is incomplete. Please check your environment variables.', 'error')
+        return redirect(url_for('login'))
     
-    session['state'] = state
-    return redirect(authorization_url)
+    try:
+        flow = Flow.from_client_config(
+            {
+                "web": {
+                    "client_id": client_id,
+                    "client_secret": client_secret,
+                    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                    "token_uri": "https://oauth2.googleapis.com/token",
+                    "redirect_uris": [redirect_uri]
+                }
+            },
+            scopes=['openid', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile']
+        )
+        
+        # Set the redirect URI explicitly
+        flow.redirect_uri = redirect_uri
+        
+        authorization_url, state = flow.authorization_url(
+            access_type='offline',
+            include_granted_scopes='true'
+        )
+        
+        session['state'] = state
+        print(f"Google OAuth redirect URI: {flow.redirect_uri}")
+        print(f"Authorization URL: {authorization_url}")
+        return redirect(authorization_url)
+        
+    except Exception as e:
+        print(f"Error in Google OAuth: {e}")
+        flash('Failed to initialize Google OAuth. Please try again.', 'error')
+        return redirect(url_for('login'))
 
 
 @app.route('/auth/google/callback')
 def google_callback():
     try:
+        print("=== Google OAuth Callback Started ===")
+        
+        # Check if required environment variables are set
+        client_id = os.getenv('GOOGLE_CLIENT_ID')
+        client_secret = os.getenv('GOOGLE_CLIENT_SECRET')
+        redirect_uri = os.getenv('GOOGLE_REDIRECT_URI')
+        
+        if not all([client_id, client_secret, redirect_uri]):
+            print("Missing environment variables")
+            flash('Google OAuth configuration is incomplete. Please check your environment variables.', 'error')
+            return redirect(url_for('login'))
+        
+        print(f"Environment variables loaded successfully")
+        
         flow = Flow.from_client_config(
             {
                 "web": {
-                    "client_id": os.getenv('GOOGLE_CLIENT_ID'),
-                    "client_secret": os.getenv('GOOGLE_CLIENT_SECRET'),
+                    "client_id": client_id,
+                    "client_secret": client_secret,
                     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
                     "token_uri": "https://oauth2.googleapis.com/token",
-                    "redirect_uris": [os.getenv('GOOGLE_REDIRECT_URI')]
+                    "redirect_uris": [redirect_uri]
                 }
             },
-            scopes=['openid', 'email', 'profile']
+            scopes=['openid', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile']
         )
         
+        # Set the redirect URI explicitly
+        flow.redirect_uri = redirect_uri
+        
+        print(f"Callback redirect URI: {flow.redirect_uri}")
+        print(f"Request URL: {request.url}")
+        
+        print("Fetching token from authorization response...")
         flow.fetch_token(authorization_response=request.url)
+        print("Token fetched successfully")
         
         # Get user info from Google
+        print("Verifying OAuth token...")
         id_info = id_token.verify_oauth2_token(
             flow.credentials.id_token, 
             requests.Request(), 
-            os.getenv('GOOGLE_CLIENT_ID')
+            client_id
         )
+        print(f"Token verified. User info: {id_info}")
         
         email = id_info['email']
         name = id_info.get('name', email.split('@')[0])
         
+        print(f"Processing user: {name} ({email})")
+        
         # Check if user already exists
+        print("Checking if user exists in database...")
         user = User.query.filter_by(email=email).first()
         
         if user:
+            print(f"User exists: {user.name} (ID: {user.id})")
             # User exists, log them in
             login_user(user)
+            print("User logged in successfully")
             flash(f'Welcome, {user.name}!', 'success')
         else:
-            # Create new user
+                    print("User does not exist, creating new user...")
+        # Create new user
+        try:
+            print("Creating User object...")
             user = User(
                 name=name,
                 email=email,
                 password=bcrypt.generate_password_hash(secrets.token_urlsafe(32)).decode('utf-8')
             )
-            db.session.add(user)
-            db.session.commit()
+            print(f"User object created: {user}")
+            print(f"User attributes - name: {user.name}, email: {user.email}, password length: {len(user.password)}")
             
+            print("Adding user to database session...")
+            db.session.add(user)
+            print("User added to session")
+            
+            print("Committing to database...")
+            db.session.commit()
+            print(f"User committed to database. New user ID: {user.id}")
+            
+            print("Logging in user...")
             login_user(user)
+            print("New user logged in successfully")
             flash(f'Welcome, {user.name}!', 'success')
+            
+        except Exception as user_creation_error:
+            print(f"Error creating user: {user_creation_error}")
+            print(f"Error type: {type(user_creation_error).__name__}")
+            import traceback
+            print(f"User creation traceback: {traceback.format_exc()}")
+            db.session.rollback()
+            raise user_creation_error
         
+        print("Redirecting to dashboard...")
         return redirect(url_for('dashboard'))
         
     except Exception as e:
+        print(f"=== Google OAuth callback error: {e} ===")
+        print(f"Error type: {type(e).__name__}")
+        import traceback
+        print(f"Full traceback: {traceback.format_exc()}")
         flash('Google authentication failed. Please try again.', 'error')
-        return redirect(url_for('register'))
+        return redirect(url_for('login'))
 
 
 @app.route('/game/<int:game_id>/delete_player/<int:player_id>', methods=['POST'])
@@ -733,6 +812,30 @@ def test_gamescore_count(game_id, team_id):
 
     # Return the count
     return f'Number of GameScore instances for game ID {game_id} and team ID {team_id}: {gamescore_count}'
+
+
+@app.route('/test_oauth_config')
+def test_oauth_config():
+    """Test route to verify OAuth configuration"""
+    config = {
+        'GOOGLE_CLIENT_ID': os.getenv('GOOGLE_CLIENT_ID'),
+        'GOOGLE_CLIENT_SECRET': os.getenv('GOOGLE_CLIENT_SECRET'),
+        'GOOGLE_REDIRECT_URI': os.getenv('GOOGLE_REDIRECT_URI'),
+        'SECRET_KEY': os.getenv('SECRET_KEY'),
+        'DATABASE_URI': os.getenv('DATABASE_URI')
+    }
+    
+    # Mask sensitive values
+    if config['GOOGLE_CLIENT_SECRET']:
+        config['GOOGLE_CLIENT_SECRET'] = config['GOOGLE_CLIENT_SECRET'][:10] + '...'
+    if config['SECRET_KEY']:
+        config['SECRET_KEY'] = config['SECRET_KEY'][:10] + '...'
+    
+    return {
+        'status': 'success',
+        'config': config,
+        'missing_vars': [k for k, v in config.items() if not v]
+    }
 
 
 
