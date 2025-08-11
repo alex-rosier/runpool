@@ -12,7 +12,7 @@
         <a href="{{ url_for('view_scorecard', game_token=game.token) }}" class="scorecard-button">View Live Scorecard</a>
     </div>
 
-    <div class="form-container">
+    <div class="game-content">
         <div class="section-title">Current Players</div>
         
         <div class="players-list">
@@ -39,18 +39,20 @@
 
         <div class="section-title">Add New Player</div>
         <form method="post" action="{{ url_for('add_player', game_id=game.id) }}" class="add-player-form">
-            <div class="input-container">
-                <label for="player_name">Player Name</label>
-                <input type="text" name="player_name" id="player_name" required>
-            </div>
-            <div class="input-container">
-                <label for="team_id">Team</label>
-                <select name="team_id" id="team_id" required>
-                    <option value="">Select a team</option>
-                    {% for team in teams %}
-                    <option value="{{ team.id }}">{{ team.name }}</option>
-                    {% endfor %}
-                </select>
+            <div class="form-row">
+                <div class="input-container">
+                    <label for="player_name">Player Name</label>
+                    <input type="text" name="player_name" id="player_name" required>
+                </div>
+                <div class="input-container">
+                    <label for="team_id">Team</label>
+                    <select name="team_id" id="team_id" required>
+                        <option value="">Select a team</option>
+                        {% for team in teams %}
+                        <option value="{{ team.id }}">{{ team.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
             <button type="submit" class="add-player-button">Add Player</button>
         </form>
@@ -163,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('playerNameDisplay').textContent = playerName;
             
             // Update form action
-            document.getElementById('deletePlayerForm').action = '/game/{{ game.id }}/delete_player/' + playerId;
+            document.getElementById('deleteGameForm').action = '/game/{{ game.id }}/delete_player/' + playerId;
             
             // Show modal
             $('#deletePlayerModal').modal('show');

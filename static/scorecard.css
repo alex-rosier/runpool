@@ -6,7 +6,9 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: white;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background-image: radial-gradient(circle at 1px 1px, #dee2e6 1px, transparent 0);
+    background-size: 20px 20px;
     text-align: center;
     padding: 40px;
     width: 100%;
@@ -15,23 +17,25 @@
 }
 
 .scorecard-header {
-    margin-bottom: 30px;
+    margin-bottom: 40px;
+    text-align: center;
 }
 
 .scorecard-title {
     color: #2C2C2C;
-    font-size: 36px;
+    font-size: 42px;
     font-family: 'Merriweather Sans', sans-serif;
     font-weight: 700;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    line-height: 1.2;
 }
 
 .game-date {
     color: #414141;
-    font-size: 22px;
+    font-size: 20px;
     font-family: 'Merriweather Sans', sans-serif;
-    font-weight: 300;
-    line-height: 40px;
+    font-weight: 400;
+    line-height: 1.4;
 }
 
 .scorecard-table-container {
@@ -39,28 +43,35 @@
     max-width: 100%;
     overflow-x: auto;
     background-color: white;
-    border-radius: 10px;
-    box-shadow: 0px 2px 12px 2px rgba(173, 173, 173, 0.25);
-    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 0;
+    margin-bottom: 40px;
 }
 
 .scorecard-table {
     width: 100%;
     border-collapse: collapse;
     background-color: white;
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
 }
 
 .scorecard-table th {
-    background-color: #F8F8F8;
-    color: #2C2C2C;
+    background-color: #1a5f7a;
+    color: white;
     font-weight: 600;
-    padding: 15px 12px;
+    padding: 18px 12px;
     text-align: center;
-    border-bottom: 2px solid #e9ecef;
+    border: none;
     font-size: 14px;
     min-width: 60px;
+    font-family: 'Merriweather Sans', sans-serif;
+}
+
+.name-header {
+    min-width: 120px !important;
+    text-align: left !important;
 }
 
 .team-header {
@@ -68,35 +79,38 @@
     text-align: left !important;
 }
 
-.player-header {
-    min-width: 120px !important;
-    text-align: left !important;
+.gp-header {
+    min-width: 60px !important;
+}
+
+.runs-header {
+    min-width: 700px !important;
+    text-align: center !important;
 }
 
 .score-header {
     min-width: 80px !important;
 }
 
-.games-header {
-    min-width: 80px !important;
+.runs-subheader th {
+    background-color: #1a5f7a;
+    padding: 12px 8px;
+    font-size: 12px;
+    font-weight: 500;
 }
 
 .run-total-header {
     min-width: 50px !important;
     font-size: 12px !important;
+    background-color: #1a5f7a !important;
 }
 
 .scorecard-table td {
-    padding: 12px;
+    padding: 16px 12px;
     text-align: center;
-    border-bottom: 1px solid #f1f3f4;
+    border-bottom: 1px solid #e9ecef;
     font-size: 14px;
-}
-
-.team-name {
-    font-weight: 600;
-    color: #086374;
-    text-align: left !important;
+    font-family: 'Merriweather Sans', sans-serif;
 }
 
 .player-name {
@@ -105,29 +119,150 @@
     font-weight: 500;
 }
 
+.team-name {
+    font-weight: 500;
+    color: #2C2C2C;
+    text-align: left !important;
+}
+
+.games-played {
+    font-weight: 500;
+    color: #2C2C2C;
+}
+
 .player-score {
     font-weight: 600;
     color: #2C2C2C;
 }
 
-.games-played {
-    font-weight: 500;
-    color: #414141;
-}
-
 .run-total-cell {
     min-width: 50px;
     position: relative;
+    padding: 8px 4px !important;
 }
 
 .checkmark {
     color: #28a745;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
 }
 
-.team-row:hover {
+.player-row:hover {
     background-color: #f8f9fa;
+}
+
+.no-players {
+    background-color: #f8f9fa;
+}
+
+.no-players-message {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 40px 20px !important;
+}
+
+/* Action Buttons */
+.scorecard-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.action-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background-color: white;
+    color: #2C2C2C;
+    text-decoration: none;
+    border-radius: 8px;
+    font-family: 'Merriweather Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9ecef;
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+    color: #1a5f7a;
+}
+
+.action-button i {
+    font-size: 16px;
+}
+
+.edit-button:hover {
+    color: #007bff;
+}
+
+.share-button:hover {
+    color: #28a745;
+}
+
+.print-button:hover {
+    color: #6c757d;
+}
+
+.new-pool-button:hover {
+    color: #17a2b8;
+}
+
+.delete-button:hover {
+    color: #dc3545;
+}
+
+.guest-message {
+    text-align: center;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9ecef;
+}
+
+.guest-message p {
+    margin: 0;
+    color: #6c757d;
+    font-family: 'Merriweather Sans', sans-serif;
+}
+
+.guest-message a {
+    color: #1a5f7a;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.guest-message a:hover {
+    text-decoration: underline;
+}
+
+/* Print styles */
+@media print {
+    .scorecard-actions,
+    .navbar,
+    .container-fluid > *:not(.scorecard-container) {
+        display: none !important;
+    }
+    
+    .scorecard-container {
+        background: white !important;
+        padding: 20px !important;
+        min-height: auto !important;
+    }
+    
+    .scorecard-table-container {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+    }
 }
 
 /* Responsive design for smaller screens */
@@ -145,12 +280,12 @@
     }
     
     .scorecard-table-container {
-        padding: 15px;
+        padding: 0;
     }
     
     .scorecard-table th,
     .scorecard-table td {
-        padding: 8px 6px;
+        padding: 12px 8px;
         font-size: 12px;
     }
     
@@ -162,6 +297,15 @@
     .run-total-cell {
         min-width: 40px;
     }
+    
+    .scorecard-actions {
+        gap: 15px;
+    }
+    
+    .action-button {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -171,14 +315,25 @@
     }
     
     .scorecard-table-container {
-        padding: 10px;
+        padding: 0;
     }
     
     .scorecard-title {
-        font-size: 28px;
+        font-size: 32px;
     }
     
     .game-date {
-        font-size: 18px;
+        font-size: 16px;
+    }
+    
+    .scorecard-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .action-button {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 20px;
     }
 }

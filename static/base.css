@@ -40,6 +40,20 @@ body {
     transform: translateY(-1px);
 }
 
+/* Override Bootstrap primary color for navbar */
+.navbar.bg-primary {
+    background-color: #086374 !important;
+}
+
+.navbar.bg-primary .navbar-brand,
+.navbar.bg-primary .navbar-nav .nav-link {
+    color: #ffffff !important;
+}
+
+.navbar.bg-primary .navbar-nav .nav-link:hover {
+    background-color: rgba(255,255,255,0.15) !important;
+}
+
 /* Jumbotron Improvements */
 .jumbotron {
     border-radius: 1rem;
