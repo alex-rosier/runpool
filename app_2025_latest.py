@@ -171,6 +171,7 @@ class Team(db.Model):
 
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    pool_name = db.Column(db.String(100), nullable=False)  # Add pool_name field
     start_date = db.Column(db.DateTime, nullable=False)  # Change this line
     token = db.Column(db.String(32), nullable=False, unique=True)
     players = db.relationship('Player', backref='game', lazy=True)
@@ -335,8 +336,9 @@ def forgot_password():
 @login_required
 def create_game():
     if request.method == 'POST':
+        pool_name = request.form['pool_name']
         start_date = datetime.strptime(request.form['start_date'], '%Y-%m-%d')
-        game = Game(start_date=start_date)
+        game = Game(pool_name=pool_name, start_date=start_date)
         print(f"Game before commit: {game.__dict__}")
         db.session.add(game)
         db.session.commit()
@@ -376,8 +378,8 @@ def create_game():
             db.session.commit()
             print(f"Successfully created game {game.id} with {len(player_names) + 1} players")
             flash(f'Game created successfully! Game ID: {game.id}', 'success')
-            # Redirect to the game view page with the new game ID
-            return redirect(url_for('view_game', game_id=game.id))
+            # Redirect to the scorecard page with the new game token
+            return redirect(url_for('view_scorecard', game_token=game.token))
         except Exception as e:
             print(f"Failed to commit changes to game creation: {e}")
             db.session.rollback()

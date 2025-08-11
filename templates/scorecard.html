@@ -4,13 +4,12 @@
 
 <div class="scorecard-container">
     <div class="scorecard-header">
-        <div class="scorecard-title">Live Scorecard</div>
+        <div class="scorecard-title">{{ game.pool_name }}</div>
         <div class="game-date">{{ game.start_date.strftime('%B %d, %Y') }}</div>
     </div>
 
-    <div class="form-container">
-        <div class="scorecard-table-container">
-            <table class="scorecard-table">
+    <div class="scorecard-table-container">
+        <table class="scorecard-table">
                 <thead>
                     <tr>
                         <th class="team-header">Team</th>
@@ -56,7 +55,6 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
     </div>
 </div>
 

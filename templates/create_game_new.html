@@ -4,7 +4,7 @@
 <div class="create-game-container">
     <h2 class="title">Set up your 13 Run Pool</h2>
     <p class="subtitle">Just a few quick details. You can add other players at any time.</p>
-    <form method="post" class="create-game-form" action="{{ url_for('create_game') }}">
+    <form method="post" class="create-game-form" action="{{ url_for('create_game') }}" id="createGameForm">
         <div class="input-container">
             <input type="text" name="pool_name" placeholder="Pick a pool name" required>
         </div>
@@ -27,13 +27,17 @@
             <label for="player_name">Add additional players</label>
             <!-- Container for player fields -->
             <div class="player-field">
-                <input type="text" name="player_names[]" placeholder="Player name" required>
-                <select name="team_id[]" required>
-                    <option value="">Select team</option>
-                    {% for team in teams %}
-                    <option value="{{ team.id }}">{{ team.name }}</option>
-                    {% endfor %}
-                </select>
+                <div class="input-container">
+                    <input type="text" name="player_names[]" placeholder="Player name" required>
+                </div>
+                <div class="input-container">
+                    <select name="team_id[]" required>
+                        <option value="">Select team</option>
+                        {% for team in teams %}
+                        <option value="{{ team.id }}">{{ team.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <button type="button" class="remove-player-button" onclick="removePlayerField(this)">Remove</button>
             </div>
             <!-- More player fields will be added here -->
@@ -47,9 +51,28 @@
     </div>
 </div>
 
+<!-- Loading Screen -->
+<div id="loadingScreen" class="loading-screen" style="display: none;">
+    <div class="loading-content">
+        <h2 class="loading-title">Creating Your Pool!</h2>
+        <div class="loading-spinner">
+            <div class="spinner-circle"></div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.add-player-button').addEventListener('click', addPlayerField);
+        
+        // Handle form submission to show loading screen
+        document.getElementById('createGameForm').addEventListener('submit', function(e) {
+            // Show loading screen
+            document.getElementById('loadingScreen').style.display = 'flex';
+            
+            // Hide the form container
+            document.querySelector('.create-game-container').style.display = 'none';
+        });
     });
 
     function addPlayerField() {
@@ -57,13 +80,17 @@
         let newField = document.createElement('div');
         newField.classList.add('player-field');
         newField.innerHTML = `
-            <input type="text" name="player_names[]" placeholder="Player name" required>
-            <select name="team_id[]" required>
-                <option value="">Select team</option>
-                {% for team in teams %}
-                <option value="{{ team.id }}">{{ team.name }}</option>
-                {% endfor %}
-            </select>
+            <div class="input-container">
+                <input type="text" name="player_names[]" placeholder="Player name" required>
+            </div>
+            <div class="input-container">
+                <select name="team_id[]" required>
+                    <option value="">Select team</option>
+                    {% for team in teams %}
+                    <option value="{{ team.id }}">{{ team.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
             <button type="button" class="remove-player-button" onclick="removePlayerField(this)">Remove</button>`;
         playersContainer.appendChild(newField);
     }

@@ -81,16 +81,25 @@
     text-align: left;
 }
 
+/* Updated select styles to match the new input system */
 .current-user-container select {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #086374;
-    border-radius: 0.625rem;
+    padding: 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
     font-size: 16px;
-    height: 4.625rem;
+    height: 48px; /* Standardized height */
     background: #ffffff;
     box-sizing: border-box;
     text-align: left;
+    transition: all 0.2s ease;
+}
+
+.current-user-container select:focus {
+    outline: none;
+    border-color: #086374;
+    box-shadow: 0 0 0 3px rgba(8, 99, 116, 0.1);
+    transform: translateY(-1px);
 }
 
 /* Edit Game Page */
@@ -104,7 +113,7 @@
     text-align: center;
     padding: 40px;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 0 auto;
 }
 
@@ -261,18 +270,32 @@
     background-color: #c82333;
 }
 
-/* Update existing input-container styles for select elements */
+/* Updated input and select styles to match the new standardized system */
+.input-container input,
 .input-container select {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 0.625rem;
+    padding: 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
     font-size: 16px;
-    height: 4.625rem;
-    flex-shrink: 0; 
-    background: var(--colors-primary, #ffffff);
+    height: 48px; /* Standardized height */
+    background: #ffffff;
     box-sizing: border-box;
     text-align: left;
+    transition: all 0.2s ease;
+}
+
+.input-container input:focus,
+.input-container select:focus {
+    outline: none;
+    border-color: #086374;
+    box-shadow: 0 0 0 3px rgba(8, 99, 116, 0.1);
+    transform: translateY(-1px);
+}
+
+.input-container input::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
 }
 
 /* Back to options link */
@@ -298,4 +321,76 @@
 
 .back-link i {
     margin-right: 8px;
+}
+
+/* Mobile responsiveness improvements */
+@media (max-width: 768px) {
+    .player-field {
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+    }
+    
+    .player-field input,
+    .player-field select {
+        width: 100%;
+    }
+    
+    .current-user-container select {
+        height: 48px; /* Keep consistent height on mobile */
+        padding: 12px 16px;
+    }
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 1600px) {
+    .edit-game-container {
+        max-width: 95%;
+        padding: 30px 20px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .edit-game-container {
+        max-width: 98%;
+        padding: 20px 15px;
+    }
+    
+    .game-title {
+        font-size: 32px;
+    }
+    
+    .game-date {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .edit-game-container {
+        max-width: 100%;
+        padding: 15px 10px;
+    }
+    
+    .game-title {
+        font-size: 28px;
+    }
+    
+    .game-date {
+        font-size: 18px;
+    }
+    
+    .section-title {
+        font-size: 20px;
+    }
+    
+    .player-card {
+        padding: 15px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .player-actions {
+        align-self: flex-end;
+    }
 }

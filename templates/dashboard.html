@@ -91,6 +91,10 @@
                                             {% endif %}
                                         </p>
                                         <p class="card-text">
+                                            <i class="fas fa-trophy mr-2"></i>
+                                            {{ player.game.pool_name }}
+                                        </p>
+                                        <p class="card-text">
                                             <i class="fas fa-users mr-2"></i>
                                             {{ player.game.players|length if player.game.players else 0 }} players
                                         </p>
@@ -107,7 +111,7 @@
                                                 <button type="button" 
                                                         class="btn btn-outline-danger btn-sm delete-game-btn" 
                                                         data-game-id="{{ player.game_id }}"
-                                                        data-game-name="Game #{{ player.game_id }}"
+                                                        data-game-name="{{ player.game.pool_name }}"
                                                         title="Delete this game">
                                                     <i class="fas fa-trash mr-1"></i>Delete
                                                 </button>
@@ -147,7 +151,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p class="mb-2">Are you sure you want to delete this game?</p>
+                <p class="mb-2">Are you sure you want to delete "<span id="gameNameDisplay"></span>"?</p>
                 <p class="text-muted mb-0">This action cannot be undone.</p>
             </div>
             <div class="modal-footer border-0">
@@ -176,6 +180,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update modal content
             document.getElementById('deleteGameModalLabel').innerHTML = 
                 '<i class="fas fa-exclamation-triangle mr-2"></i>Delete ' + gameName;
+            
+            // Update modal body to show the specific game name
+            document.getElementById('gameNameDisplay').textContent = gameName;
             
             // Update form action
             document.getElementById('deleteGameForm').action = '/game/' + gameId + '/delete';
