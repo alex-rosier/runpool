@@ -16,6 +16,7 @@ from flask_bcrypt import Bcrypt
 from datetime import datetime, date
 import secrets
 import pdp
+import json
 
 from flask_mail import Mail, Message
 import schedule
@@ -120,13 +121,44 @@ def dashboard():
     from datetime import datetime
     now = datetime.now()
     
-    # Get user's active games safely
+    # Get user's games with enhanced information
     try:
-        active_games = current_user.players if hasattr(current_user, 'players') else []
-    except:
-        active_games = []
+        user_players = current_user.players if hasattr(current_user, 'players') else []
+        
+        # Enhance player data with game status and winner information
+        enhanced_games = []
+        for player in user_players:
+            game = player.game
+            if game:
+                # Get winner information if game is completed
+                winner_info = None
+                if game.status == "completed" and game.winner_team_id:
+                    winner_team = Team.query.get(game.winner_team_id)
+                    winner_player = Player.query.get(game.winner_player_id) if game.winner_player_id else None
+                    
+                    winner_info = {
+                        'team_name': winner_team.name if winner_team else 'Unknown',
+                        'player_name': winner_player.user.name if winner_player and winner_player.user else 
+                                     (winner_player.non_registered_player.name if winner_player and winner_player.non_registered_player else 'Unknown')
+                    }
+                
+                # Get progress information (unique run totals achieved)
+                progress_info = {
+                    'unique_runs': player.score if player.score is not None else 0,
+                    'max_possible': 14  # 0-13 inclusive
+                }
+                
+                enhanced_games.append({
+                    'player': player,
+                    'game': game,
+                    'winner_info': winner_info,
+                    'progress_info': progress_info
+                })
+    except Exception as e:
+        print(f"Error loading dashboard data: {e}")
+        enhanced_games = []
     
-    return render_template('dashboard.html', now=now, active_games=active_games)
+    return render_template('dashboard.html', now=now, enhanced_games=enhanced_games)
 
 
 class User(db.Model, UserMixin):
@@ -173,13 +205,22 @@ class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     pool_name = db.Column(db.String(100), nullable=False)  # Add pool_name field
     start_date = db.Column(db.DateTime, nullable=False)  # Change this line
+    status = db.Column(db.String(20), nullable=False, default="active")
+    end_date = db.Column(db.DateTime, nullable=True)
+    winner_player_id = db.Column(db.Integer, db.ForeignKey('player.id'), nullable=True)
+    winner_team_id = db.Column(db.Integer, db.ForeignKey('team.id'), nullable=True)
+    tiebreaker_notes = db.Column(db.Text, nullable=True)  # store JSON string
     token = db.Column(db.String(32), nullable=False, unique=True)
-    players = db.relationship('Player', backref='game', lazy=True)
+    players = db.relationship('Player', backref='game', lazy=True, foreign_keys='Player.game_id')
     scores = db.relationship('GameScore', backref='game', lazy=True)
+    winner_player = db.relationship('Player', foreign_keys=[winner_player_id], backref='won_games')
+    winner_team = db.relationship('Team', foreign_keys=[winner_team_id], backref='won_games')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.token = secrets.token_hex(16)  # Generate a random token when creating a game
+        if not hasattr(self, 'status') or self.status is None:
+            self.status = "active"
 
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -377,6 +418,44 @@ def create_game():
         try:
             db.session.commit()
             print(f"Successfully created game {game.id} with {len(player_names) + 1} players")
+            
+            # Immediately fetch any existing MLB scores for this game's start date and update scorecard
+            try:
+                from datetime import datetime
+                game_start_date = game.start_date
+                current_date = datetime.now().date()
+                
+                # Only fetch scores if the game started before today
+                if game_start_date.date() < current_date:
+                    print(f"Fetching existing MLB scores for game {game.id} from {game_start_date.date()} to {current_date}")
+                    
+                    # Fetch scores for each day from game start to yesterday
+                    from datetime import timedelta
+                    start_date = game_start_date.date()
+                    end_date = current_date - timedelta(days=1)  # Yesterday
+                    
+                    current_check_date = start_date
+                    while current_check_date <= end_date:
+                        date_str = current_check_date.strftime('%m/%d/%Y')
+                        print(f"Checking for scores on {date_str}")
+                        
+                        # Fetch scores for this date
+                        scores = get_final_scores(date_str, game.id)
+                        if scores:
+                            print(f"Found {len(scores)} scores for {date_str}")
+                        
+                        current_check_date += timedelta(days=1)
+                    
+                    # Update the scorecard with any new scores
+                    update_scorecard()
+                    print(f"Scorecard updated for newly created game {game.id}")
+                else:
+                    print(f"Game {game.id} starts today, no historical scores to fetch")
+                    
+            except Exception as score_error:
+                print(f"Warning: Could not fetch historical scores for new game: {score_error}")
+                # Don't fail the game creation if score fetching fails
+            
             flash(f'Game created successfully! Game ID: {game.id}', 'success')
             # Redirect to the scorecard page with the new game token
             return redirect(url_for('view_scorecard', game_token=game.token))
@@ -764,6 +843,63 @@ def test_update_player_scores():
     players = Player.query.all()
     return '\n'.join(str(player.id) + ': ' + str(player.score) for player in players)
 
+@app.route('/manual_update_scorecard/<int:game_id>')
+def manual_update_scorecard(game_id):
+    """Manually trigger scorecard update for a specific game"""
+    try:
+        game = Game.query.get(game_id)
+        if not game:
+            return f"Game {game_id} not found", 404
+        
+        print(f"Manually updating scorecard for game {game_id} ({game.pool_name})")
+        
+        # Update the scorecard
+        update_scorecard()
+        
+        # Get the updated run totals
+        run_totals = TeamGameRunTotal.query.filter_by(game_id=game_id).all()
+        
+        return {
+            'status': 'success',
+            'message': f'Scorecard updated for game {game_id}',
+            'game_name': game.pool_name,
+            'run_totals_count': len(run_totals),
+            'run_totals': [
+                {'team_id': rt.team_id, 'run_total': rt.run_total} 
+                for rt in run_totals
+            ]
+        }
+        
+    except Exception as e:
+        return {
+            'status': 'error',
+            'message': f'Failed to update scorecard: {str(e)}'
+        }, 500
+
+@app.route('/manual_update_all_scorecards')
+def manual_update_all_scorecards():
+    """Manually trigger scorecard update for all games"""
+    try:
+        print("Manually updating scorecards for all games")
+        
+        # Update all scorecards
+        update_scorecard()
+        
+        # Get count of all run totals
+        total_run_totals = TeamGameRunTotal.query.count()
+        
+        return {
+            'status': 'success',
+            'message': 'All scorecards updated',
+            'total_run_totals': total_run_totals
+        }
+        
+    except Exception as e:
+        return {
+            'status': 'error',
+            'message': f'Failed to update scorecards: {str(e)}'
+        }, 500
+
 @app.route('/test_gamescores/<int:game_id>/<date>')
 def test_gamescores(game_id, date):
     # Convert the date string to a datetime.date object
@@ -839,6 +975,127 @@ def test_oauth_config():
         'missing_vars': [k for k, v in config.items() if not v]
     }
 
+
+@app.route('/test_mlb_api')
+def test_mlb_api():
+    """Test route to verify MLB API is working"""
+    try:
+        # Test with today's date
+        from datetime import datetime
+        today = datetime.now().strftime('%m/%d/%Y')
+        
+        # Test the statsapi.schedule function
+        mlb_schedule = statsapi.schedule(date=today, sportId=1)
+        
+        if mlb_schedule:
+            # Get some sample game data
+            sample_game = mlb_schedule[0] if len(mlb_schedule) > 0 else None
+            
+            return {
+                'status': 'success',
+                'message': 'MLB API is working',
+                'date_tested': today,
+                'games_found': len(mlb_schedule),
+                'sample_game': sample_game
+            }
+        else:
+            return {
+                'status': 'success',
+                'message': 'MLB API is working but no games scheduled for today',
+                'date_tested': today,
+                'games_found': 0
+            }
+            
+    except ImportError as e:
+        return {
+            'status': 'error',
+            'message': 'MLB-StatsAPI library not installed',
+            'error': str(e)
+        }
+    except Exception as e:
+        return {
+            'status': 'error',
+            'message': 'MLB API test failed',
+            'error': str(e),
+            'error_type': type(e).__name__
+        }
+
+
+@app.route('/test_mlb_api_date/<date>')
+def test_mlb_api_date(date):
+    """Test MLB API with a specific date (format: MM/DD/YYYY)"""
+    try:
+        # Test the statsapi.schedule function with the specified date
+        mlb_schedule = statsapi.schedule(date=date, sportId=1)
+        
+        if mlb_schedule:
+            # Get some sample game data
+            sample_games = mlb_schedule[:3] if len(mlb_schedule) > 3 else mlb_schedule
+            
+            return {
+                'status': 'success',
+                'message': 'MLB API is working',
+                'date_tested': date,
+                'games_found': len(mlb_schedule),
+                'sample_games': sample_games
+            }
+        else:
+            return {
+                'status': 'success',
+                'message': 'MLB API is working but no games scheduled for this date',
+                'date_tested': date,
+                'games_found': 0
+            }
+            
+    except ImportError as e:
+        return {
+            'status': 'error',
+            'message': 'MLB-StatsAPI library not installed',
+            'error': str(e)
+        }
+    except Exception as e:
+        return {
+            'status': 'error',
+            'message': 'MLB API test failed',
+            'error': str(e),
+            'error_type': type(e).__name__
+        }
+
+
+@app.route('/test_get_final_scores/<date>/<int:game_id>')
+def test_get_final_scores(date, game_id):
+    """Test the get_final_scores function with a specific date and game ID"""
+    try:
+        # Test the get_final_scores function
+        scores = get_final_scores(date, game_id)
+        
+        return {
+            'status': 'success',
+            'message': 'get_final_scores function executed successfully',
+            'date_tested': date,
+            'game_id_tested': game_id,
+            'scores_returned': len(scores),
+            'scores': [
+                {
+                    'team_id': score.team_id,
+                    'game_id': score.game_id,
+                    'api_game_id': score.api_game_id,
+                    'score': score.score,
+                    'date': score.date.isoformat() if score.date else None,
+                    'final': score.final
+                } for score in scores
+            ] if scores else []
+        }
+            
+    except Exception as e:
+        return {
+            'status': 'error',
+            'message': 'get_final_scores function failed',
+            'error': str(e),
+            'error_type': type(e).__name__,
+            'date_tested': date,
+            'game_id_tested': game_id
+        }
 
 
 @app.route('/all_scores')
@@ -925,49 +1182,43 @@ def update_player_scores():
 def update_scorecard():
     print("Updating scorecard")
 
-    # Fetch scores
-    current_date = (datetime.now() - timedelta(days=1)).strftime('%m/%d/%Y')
-
     # Get all games
     games = Game.query.all()
 
     # Loop through each game
     for game in games:
         try:
-            # Fetch scores for the current game
-            scores = get_final_scores(current_date, game.id)
-            print(f"Scores for game id {game.id}: {scores}")
+            # Get existing GameScore records for this game that haven't been processed yet
+            # We'll process all GameScores that don't have corresponding TeamGameRunTotal records
+            existing_gamescores = GameScore.query.filter_by(game_id=game.id).all()
+            
+            if existing_gamescores:
+                print(f"Processing {len(existing_gamescores)} existing GameScores for game {game.id}")
 
-            # Check if scores is not None and not empty
-            if scores:
+                # Loop through each existing score
+                for gamescore in existing_gamescores:
+                    print(f"Processing GameScore: {gamescore}, team_id: {gamescore.team_id}, score: {gamescore.score}")
 
-                # Loop through each score
-                for gamescore in scores:
-                    print(f"GameScore: {gamescore}, gamescore.team_id: {gamescore.team_id}")
-
-                    # Get all team_ids
-                    all_team_ids = [team.id for team in Team.query.all()]
-
-                    # Check if the gamescore's team_id is in the list of all_team_ids
-                    if gamescore.team_id in all_team_ids:
-
-                        # Check if the score is not already in the game's run_totals
-                        existing_score = TeamGameRunTotal.query.filter_by(
+                    # Check if the score is not already in the game's run_totals
+                    existing_score = TeamGameRunTotal.query.filter_by(
+                        team_id=gamescore.team_id, 
+                        game_id=game.id, 
+                        run_total=gamescore.score
+                    ).first()
+                    
+                    if existing_score is None:
+                        # Create new TeamGameRunTotal record
+                        team_game_run_total = TeamGameRunTotal(
                             team_id=gamescore.team_id, 
                             game_id=game.id, 
                             run_total=gamescore.score
-                        ).first()
-                        print(f'Existing score for team_id {gamescore.team_id} and game_id {game.id}: {existing_score}')
-
-                        # If the score doesn't exist yet for this team in this game, create a new entry
-                        if existing_score is None:
-                            team_game_run_total = TeamGameRunTotal(
-                                team_id=gamescore.team_id, 
-                                game_id=game.id, 
-                                run_total=gamescore.score
-                            )
-                            print(f"Adding new score {gamescore.score} for team_id {gamescore.team_id} in game {game.id}")
-                            db.session.add(team_game_run_total)
+                        )
+                        print(f"Adding new run total {gamescore.score} for team_id {gamescore.team_id} in game {game.id}")
+                        db.session.add(team_game_run_total)
+                    else:
+                        print(f"Run total {gamescore.score} for team_id {gamescore.team_id} in game {game.id} already exists")
+            else:
+                print(f"No GameScores found for game {game.id}")
 
         except Exception as e:
             print(f"Error processing game {game.id}: {e}")
@@ -1181,6 +1432,144 @@ import threading
 # Create a lock object
 job_lock = threading.Lock()
 
+def evaluate_game_winner(game_id: int) -> dict | None:
+    """
+    Evaluate the winner of a game based on run totals and tiebreaker rules.
+    
+    Args:
+        game_id: The ID of the game to evaluate
+        
+    Returns:
+        dict with winner information or None if no winner yet
+    """
+    # Load Game and ensure status == "active"
+    game = Game.query.get(game_id)
+    if not game or game.status != "active":
+        return None
+    
+    # Get all teams participating in this game
+    players = Player.query.filter_by(game_id=game_id).all()
+    if not players:
+        return None
+    
+    # Get unique teams from players
+    teams = list(set([player.team_id for player in players]))
+    
+    # Track teams that have completed all 0-13 runs
+    completed_teams = []
+    
+    for team_id in teams:
+        # Get run totals achieved by this team in this game
+        run_totals = db.session.query(TeamGameRunTotal.run_total).filter(
+            TeamGameRunTotal.team_id == team_id,
+            TeamGameRunTotal.game_id == game_id
+        ).all()
+        
+        # Convert to set of run totals
+        achieved_runs = set([rt.run_total for rt in run_totals])
+        
+        # Check if team has all runs from 0 to 13
+        if achieved_runs.issuperset(set(range(14))):  # 0 to 13 inclusive
+            completed_teams.append(team_id)
+    
+    # If no team has completed all runs, return None
+    if not completed_teams:
+        return None
+    
+    # Build candidate list of teams that have all 0-13
+    candidates = []
+    
+    for team_id in completed_teams:
+        # Get first achieved date for each run (0-13)
+        first_achieved_dates = {}
+        
+        for run in range(14):
+            # Find earliest GameScore date for this run
+            earliest_score = db.session.query(GameScore.date).filter(
+                GameScore.team_id == team_id,
+                GameScore.game_id == game_id,
+                GameScore.score == run
+            ).order_by(GameScore.date.asc()).first()
+            
+            if earliest_score:
+                first_achieved_dates[run] = earliest_score.date
+        
+        # Get games played count
+        team = Team.query.get(team_id)
+        games_played = team.games_played(game_id) if team else 0
+        
+        # Determine winner_date (latest of first_achieved_date[0-13])
+        winner_date = max(first_achieved_dates.values()) if first_achieved_dates else None
+        
+        if winner_date:
+            candidates.append({
+                'team_id': team_id,
+                'winner_date': winner_date,
+                'games_played': games_played,
+                'first_achieved_dates': first_achieved_dates
+            })
+    
+    if not candidates:
+        return None
+    
+    # Sort candidates by winner_date (earliest first)
+    candidates.sort(key=lambda x: x['winner_date'])
+    
+    # Get teams with earliest winner_date
+    earliest_date = candidates[0]['winner_date']
+    earliest_candidates = [c for c in candidates if c['winner_date'] == earliest_date]
+    
+    if len(earliest_candidates) == 1:
+        winner = earliest_candidates[0]
+    else:
+        # Multiple teams with same winner_date, compare games_played
+        earliest_candidates.sort(key=lambda x: x['games_played'])
+        fewest_games = earliest_candidates[0]['games_played']
+        fewest_games_candidates = [c for c in earliest_candidates if c['games_played'] == fewest_games]
+        
+        if len(fewest_games_candidates) == 1:
+            winner = fewest_games_candidates[0]
+        else:
+            # Still multiple teams, compare first_achieved_dates from 13 down to 0
+            winner = fewest_games_candidates[0]  # Default to first one
+            
+            for run in range(13, -1, -1):  # 13 down to 0
+                run_dates = [c['first_achieved_dates'].get(run) for c in fewest_games_candidates]
+                run_dates = [d for d in run_dates if d is not None]
+                
+                if run_dates:
+                    earliest_run_date = min(run_dates)
+                    earliest_run_candidates = [c for c in fewest_games_candidates 
+                                            if c['first_achieved_dates'].get(run) == earliest_run_date]
+                    
+                    if len(earliest_run_candidates) == 1:
+                        winner = earliest_run_candidates[0]
+                        break
+                    elif len(earliest_run_candidates) < len(fewest_games_candidates):
+                        fewest_games_candidates = earliest_run_candidates
+    
+    # Find the player with the winning team
+    winner_player = Player.query.filter_by(
+        game_id=game_id, 
+        team_id=winner['team_id']
+    ).first()
+    
+    # Build tiebreaker notes
+    tiebreaker_notes = {
+        'winner_date': winner['winner_date'].isoformat() if winner['winner_date'] else None,
+        'games_played': winner['games_played'],
+        'total_candidates': len(candidates),
+        'earliest_date_candidates': len([c for c in candidates if c['winner_date'] == earliest_date]),
+        'fewest_games_candidates': len([c for c in candidates if c['games_played'] == winner['games_played']])
+    }
+    
+    return {
+        "winner_team_id": winner['team_id'],
+        "winner_player_id": winner_player.id if winner_player else None,
+        "end_date": winner['winner_date'],
+        "tiebreaker_notes": tiebreaker_notes
+    }
+
 def job():
     global job_lock
 
@@ -1204,6 +1593,37 @@ def job():
                 get_final_scores(current_date, game.id)
             update_scorecard()  # Move this line outside of the loop
             update_player_scores()  # Update player scores after fetching the MLB scores
+            
+            # Auto-complete games that have winners
+            print("Checking for game completion...")
+            active_games = Game.query.filter_by(status="active").all()
+            completed_count = 0
+            
+            for game in active_games:
+                # Skip if already completed
+                if game.status != "active":
+                    continue
+                    
+                result = evaluate_game_winner(game.id)
+                if result:
+                    print(f"Game {game.id} ({game.pool_name}) completed! Winner: Team {result['winner_team_id']}")
+                    
+                    # Update game status and winner information
+                    game.status = "completed"
+                    game.end_date = result["end_date"]
+                    game.winner_team_id = result["winner_team_id"]
+                    game.winner_player_id = result["winner_player_id"]
+                    game.tiebreaker_notes = json.dumps(result["tiebreaker_notes"])
+                    
+                    completed_count += 1
+            
+            # Commit all changes at once
+            if completed_count > 0:
+                db.session.commit()
+                print(f"Successfully completed {completed_count} games")
+            else:
+                print("No games completed in this run")
+                
     finally:
         # Release the lock
         job_lock.release()
