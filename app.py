@@ -27,8 +27,9 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 import os
 
-# Allow OAuth2 to work with HTTP for local development
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+# Allow OAuth2 to work with HTTP for local development (only in development)
+if os.getenv('FLASK_ENV') == 'development':
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 TEAM_NAME_MAPPING = {
     'Arizona Diamondbacks': 'ARI',
@@ -86,8 +87,10 @@ def create_app():
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['SESSION_COOKIE_HTTPONLY'] = True
 
-    app.config['SQLALCHEMY_ECHO'] = True
-    app.config['SQLALCHEMY_RECORD_QUERIES'] = True
+    # Only enable debug features in development
+    if os.getenv('FLASK_ENV') == 'development':
+        app.config['SQLALCHEMY_ECHO'] = True
+        app.config['SQLALCHEMY_RECORD_QUERIES'] = True
 
     return app
 
@@ -1641,10 +1644,14 @@ def start_scheduler():
 
 
 if __name__ == '__main__':
-
-    # Start the scheduler in a separate thread
-    scheduler_thread = threading.Thread(target=start_scheduler)
-    scheduler_thread.start()
-
-    # Start the Flask application on port 5001 (5000 is used by macOS AirPlay)
-    app.run(debug=True, port=5001)
+    # Only run scheduler and debug mode in development
+    if os.getenv('FLASK_ENV') == 'development':
+        # Start the scheduler in a separate thread
+        scheduler_thread = threading.Thread(target=start_scheduler)
+        scheduler_thread.start()
+        
+        # Start the Flask application on port 5001 (5000 is used by macOS AirPlay)
+        app.run(debug=True, port=5001)
+    else:
+        # Production mode
+        app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: runpool
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.16
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URI
+        value: sqlite:///run_pool.db
+      - key: OAUTHLIB_INSECURE_TRANSPORT
+        value: "0"
