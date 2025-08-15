@@ -104,10 +104,12 @@
 
 .oauth-divider span {
     background-color: white;
-    padding: 0 15px;
+    padding: 0 20px;
     color: #6b7280;
     font-size: 14px;
     font-weight: 500;
+    position: relative;
+    z-index: 1;
 }
 
 .google-oauth-button {
@@ -453,6 +455,10 @@
     align-items: center;
     padding: 20px;
     text-align: center;
+}
+
+.forgot-password-container {
+    margin-top: 40px;
 }
 
 .password-reset-form {

@@ -55,6 +55,7 @@
     background-color: white;
     border-radius: 12px;
     overflow: hidden;
+    border-spacing: 0;
 }
 
 .scorecard-table th {
@@ -85,24 +86,11 @@
 
 .runs-header {
     min-width: 700px !important;
-    text-align: center !important;
+    text-align: left !important;
 }
 
-.score-header {
+.matches-header {
     min-width: 80px !important;
-}
-
-.runs-subheader th {
-    background-color: #1a5f7a;
-    padding: 12px 8px;
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.run-total-header {
-    min-width: 50px !important;
-    font-size: 12px !important;
-    background-color: #1a5f7a !important;
 }
 
 .scorecard-table td {
@@ -111,6 +99,9 @@
     border-bottom: 1px solid #e9ecef;
     font-size: 14px;
     font-family: 'Merriweather Sans', sans-serif;
+    border-left: none;
+    border-right: none;
+    border-top: none;
 }
 
 .player-name {
@@ -130,7 +121,7 @@
     color: #2C2C2C;
 }
 
-.player-score {
+.matches-count {
     font-weight: 600;
     color: #2C2C2C;
 }
@@ -138,7 +129,52 @@
 .run-total-cell {
     min-width: 50px;
     position: relative;
-    padding: 8px 4px !important;
+    padding: 16px 12px !important;
+    background-color: white;
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+    border-right: 1px solid #e9ecef;
+}
+
+.run-total-cell:first-child {
+    border-left: 1px solid #e9ecef;
+}
+
+.match-cell {
+    background-color: #e3f2fd !important;
+    border-bottom: 1px solid #e9ecef !important;
+    border-right: 1px solid #e9ecef !important;
+}
+
+.match-cell:first-child {
+    border-left: 1px solid #e9ecef !important;
+}
+
+.no-match-cell {
+    background-color: white;
+    border-bottom: 1px solid #e9ecef;
+    border-right: 1px solid #e9ecef;
+}
+
+.no-match-cell:first-child {
+    border-left: 1px solid #e9ecef;
+}
+
+.run-number {
+    color: #2C2C2C;
+    font-size: 14px;
+    font-weight: 500;
+    display: block;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.match-cell .run-number {
+    color: #1976d2;
+    font-weight: 600;
 }
 
 .checkmark {
@@ -148,7 +184,17 @@
 }
 
 .player-row:hover {
-    background-color: #f8f9fa;
+    background-color: transparent;
+}
+
+.player-row:hover .run-total-cell {
+    background-color: white !important;
+    border-color: #e9ecef !important;
+}
+
+.player-row:hover .match-cell {
+    background-color: #e3f2fd !important;
+    border-color: #bbdefb !important;
 }
 
 .no-players {
@@ -289,13 +335,33 @@
         font-size: 12px;
     }
     
-    .run-total-header {
-        min-width: 40px !important;
-        font-size: 11px !important;
-    }
-    
     .run-total-cell {
         min-width: 40px;
+        padding: 12px 8px !important;
+        border-bottom: 1px solid #e9ecef;
+        border-right: 1px solid #e9ecef;
+    }
+    
+    .run-total-cell:first-child {
+        border-left: 1px solid #e9ecef;
+    }
+    
+    .match-cell {
+        border-bottom: 1px solid #e9ecef !important;
+        border-right: 1px solid #e9ecef !important;
+    }
+    
+    .match-cell:first-child {
+        border-left: 1px solid #e9ecef !important;
+    }
+    
+    .no-match-cell {
+        border-bottom: 1px solid #e9ecef;
+        border-right: 1px solid #e9ecef;
+    }
+    
+    .no-match-cell:first-child {
+        border-left: 1px solid #e9ecef;
     }
     
     .scorecard-actions {

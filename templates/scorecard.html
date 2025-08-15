@@ -12,20 +12,11 @@
         <table class="scorecard-table">
             <thead>
                 <tr>
-                    <th class="name-header">Name</th>
+                    <th class="name-header">Member</th>
                     <th class="team-header">Team</th>
                     <th class="gp-header">GP</th>
                     <th class="runs-header" colspan="14">Runs</th>
-                    <th class="score-header">Score</th>
-                </tr>
-                <tr class="runs-subheader">
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    {% for run_total in range(14) %}
-                    <th class="run-total-header">{{ run_total }}</th>
-                    {% endfor %}
-                    <th></th>
+                    <th class="matches-header">Matches</th>
                 </tr>
             </thead>
             <tbody>
@@ -48,13 +39,17 @@
                             {% endif %}
                         </td>
                         {% for run_total in range(14) %}
-                        <td class="run-total-cell">
-                            {% if player.team and player.team.id in team_run_totals and run_total in team_run_totals[player.team.id] %}
-                            <span class="checkmark">✓</span>
-                            {% endif %}
+                        <td class="run-total-cell {% if player.team and player.team.id in team_run_totals and run_total in team_run_totals[player.team.id] %}match-cell{% else %}no-match-cell{% endif %}">
+                            <span class="run-number">{{ run_total }}</span>
                         </td>
                         {% endfor %}
-                        <td class="player-score">{{ player.score if player.score else 0 }}</td>
+                        <td class="matches-count">
+                            {% if player.team and player.team.id in team_run_totals %}
+                                {{ team_run_totals[player.team.id]|length }}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 {% else %}
